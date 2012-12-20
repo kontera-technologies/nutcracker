@@ -1,1 +1,1 @@
-rvm use 1.9.3@ruby-nutcracker --create
+rvm use 1.9.3@nutcracker --create
