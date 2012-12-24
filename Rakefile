@@ -38,7 +38,11 @@ task :download do
   end
 end
 
-task :gem => [:clobber_package, :download]
+task :build => :download do
+  sh "rake gem"
+end
+
+task :gem => [:clobber_package]
 
 Gem::PackageTask.new Nutcracker::GemSpec do |p|
   p.gem_spec = Nutcracker::GemSpec
