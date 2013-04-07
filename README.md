@@ -1,4 +1,6 @@
 # Nutcracker
+<a href="https://rubygems.org/gems/graphite-api"><img src=https://fury-badge.herokuapp.com/rb/nutcracker.png></a>
+
 This "library" wraps Twitter's [Nutcracker](https://github.com/twitter/twemproxy) in a gem package and provides ( in the near future I hope ) simple ruby API to the `nutcracker` executable.
 For now this repository only contains a Rakefile for building new `nutcracker` gems, look at the last section for more info.
 
