@@ -17,6 +17,6 @@ gem 'nutcracker'
 ```
 
 ## Wanna build a new version?
-* Set the version @ `lib/nutcracker/version.rb` ( [Available Versions](https://github.com/twitter/twemproxy/downloads) )
+* Set the version @ `lib/nutcracker/version.rb` ( [Available Versions](https://code.google.com/p/twemproxy/downloads/list) )
 * run the `rake build` command
 * look for `nutcracker-X.Y.Z` gem under the pkg folder

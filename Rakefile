@@ -25,7 +25,7 @@ task :download do
   "nutcracker-#{Nutcracker.version}.tar.gz".tap do |tarball|
     sh "mkdir ext" unless File.directory? "ext"
     sh "rm -rf ext/nutcracker"
-    sh "wget https://github.com/downloads/twitter/twemproxy/#{tarball}"
+    sh "wget https://twemproxy.googlecode.com/files/#{tarball}"
     sh "tar -zxvf #{tarball}"
     sh "mv nutcracker-#{Nutcracker.version} ext/nutcracker"
     File.open("ext/nutcracker/extconf.rb",'w') do |file|
