@@ -21,13 +21,15 @@ Nutcracker::GemSpec = Gem::Specification.new do |s|
   s.require_paths         = ['lib']
 end
 
+sversion = Nutcracker.version.split(".")[0..2].join(".") 
+
 task :download do
-  "nutcracker-#{Nutcracker.version}.tar.gz".tap do |tarball|
+  "nutcracker-#{sversion}.tar.gz".tap do |tarball|
     sh "mkdir ext" unless File.directory? "ext"
     sh "rm -rf ext/nutcracker"
     sh "wget https://twemproxy.googlecode.com/files/#{tarball}"
     sh "tar -zxvf #{tarball}"
-    sh "mv nutcracker-#{Nutcracker.version} ext/nutcracker"
+    sh "mv nutcracker-#{sversion} ext/nutcracker"
     File.open("ext/nutcracker/extconf.rb",'w') do |file|
       file.puts %q{
         raise "no support for #{RUBY_PLATFORM}" if RUBY_PLATFORM =~ /darwin|mswin|mingw/
