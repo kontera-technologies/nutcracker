@@ -18,3 +18,4 @@ _yardoc
 doc/
 ext/nutcracker
 twemproxy-twemproxy_bsd
+cluster.conf

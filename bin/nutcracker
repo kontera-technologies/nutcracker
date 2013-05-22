@@ -1,2 +1,7 @@
 #!/usr/bin/env ruby
-exec File.expand_path('../../ext/nutcracker/src/nutcracker', __FILE__ ), *ARGV
+
+$:.unshift File.expand_path("../../lib", __FILE__)
+
+require 'nutcracker'
+
+exec Nutcracker.executable, *ARGV

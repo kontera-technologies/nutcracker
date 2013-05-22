@@ -3,23 +3,7 @@ require 'nutcracker'
 require 'rake'
 require 'rubygems/package_task'
 
-Nutcracker::GemSpec = Gem::Specification.new do |s|
-  s.name                  = "nutcracker"
-  s.version               = Nutcracker.version.dup
-  s.platform              = Gem::Platform::RUBY
-  s.summary               = "Twitter's Nutcraker Gem Wrapper"
-  s.description           = "Gem/Bundler benefits for Twitter's Nutcraker C app"
-  s.author                = "Eran Barak Levi"
-  s.email                 = "eran@kontera.com"
-  s.homepage              = 'http://www.kontera.com'
-  s.required_ruby_version = '>= 1.8.5'
-  s.rubyforge_project     = "ruby-nutcracker"
-  s.files                 = %w(README.md Rakefile) + Dir.glob("{bin,lib,ext}/**/*")
-  s.require_path          = "lib"
-  s.extensions            = ['ext/nutcracker/extconf.rb']
-  s.executables           = ['nutcracker']
-  s.require_paths         = ['lib']
-end
+Nutcracker::GemSpec = eval File.read 'nutcracker.gemspec'
 
 sversion = Nutcracker.version.split(".")[0..2].join(".") 
 

@@ -7,16 +7,15 @@ For now this repository only contains a Rakefile for building new `nutcracker` g
 ## Motivation
 The main motivation here is to take the advantages of working with Bundler's dependencies management and to be able to embed Twitter's [Nutcracker](https://github.com/twitter/twemproxy) as a dependency to any Ruby project, this allow you to create small-configuration-only-apps tied to specific version of Nutcracker as I show in the example bellow.
 
-## Installation
-
-`gem install nutcracker`
-
-Or if you are using a `Gemfile`
-
-```ruby
-source :rubygems
-
+### Installation 
+Add this line to your application's Gemfile:
+```
 gem 'nutcracker'
+```
+
+And then execute:
+```
+$ bundle install
 ```
 
 after the gem was successfully installed, the `nutcracker` executable should be available
@@ -44,6 +43,25 @@ Options:
   -m, --mbuf-size=N      : set size of mbuf chunk in bytes (default: 16384 bytes)
 
 ```
+
+### Ruby Wrapper
+a simple ruby wrapper is also included
+
+```ruby
+require 'nutcracker'
+
+nutcracker = Nutcracker.start(config_file: 'cluster.yaml')
+nutcracker.running? # => true
+
+nutcracker.stats # => {"source"=>"local", "version"=>"0.2.4", "uptime"=>6...}
+
+nutcracker.stop 
+nutcracker.running? # => false
+
+nutcracker.start
+nutcracker.join # wait for server to exit
+```
+
 ## Wanna build a new version?
 * Set the version @ `lib/nutcracker/version.rb` ( [Available Versions](https://code.google.com/p/twemproxy/downloads/list) )
 * run the `rake build` command
