@@ -1,0 +1,20 @@
+PATH
+  remote: .
+  specs:
+    nutcracker (0.2.4.2)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    metaclass (0.0.1)
+    minitest (5.0.2)
+    mocha (0.14.0)
+      metaclass (~> 0.0.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  minitest (~> 5.0.0)
+  mocha (~> 0.14.0)
+  nutcracker!

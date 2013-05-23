@@ -2,6 +2,7 @@ $:.unshift File.expand_path '../lib', __FILE__
 require 'nutcracker'
 require 'rake'
 require 'rubygems/package_task'
+require "rake/testtask"
 
 Nutcracker::GemSpec = eval File.read 'nutcracker.gemspec'
 
@@ -38,4 +39,12 @@ end
 task :install => [:gem] do
    sh "gem install pkg/nutcracker"
    Rake::Task['clobber_package'].execute
+end
+
+## Tests stuff
+task :default => :test
+
+Rake::TestTask.new(:test) do |t|
+  t.libs << "tests"
+  t.pattern = "tests/**/*_test.rb"
 end

@@ -1,11 +1,12 @@
 require 'nutcracker/version'
 require 'socket'
 require 'json'
+require 'yaml'
 
 module Nutcracker
 
   def self.start options
-    Nutcracker::Process.new(options).start
+    Nutcracker::Wrapper.new(options).start
   end
 
   def self.executable
@@ -16,16 +17,16 @@ module Nutcracker
     Nutcracker::VERSION
   end
 
-  class Process
-    attr_reader :pid, :options
+  class Wrapper
+    attr_reader :pid, :config_file
 
     def initialize options
-      @options = options
+      @config_file = options.fetch :config_file
     end
 
     def start
-      raise RuntimeError, "Nutcracker is already running (#{pid})..." if running?
-      @pid = ::Process.spawn("#{Nutcracker.executable} -c #{options.fetch(:config_file).inspect}")
+      return if running?
+      @pid = ::Process.spawn Nutcracker.executable, '-c', config_file
       Kernel.at_exit { stop if running? }
       self
     end
@@ -43,23 +44,26 @@ module Nutcracker
     end
 
     def join
-      verify_running! and ::Process.waitpid2 pid
+      running! and ::Process.waitpid2 pid
     end
 
     def stats
       JSON.parse TCPSocket.new('localhost',22222).read rescue {}
     end
 
+    def config
+      @config ||= YAML.load_file config_file
+    end
+
     private
 
-    def verify_running!
+    def running!
       running? or raise RuntimeError, "Nutcracker isn't running..." 
     end
 
     def signal term
-      verify_running! and ::Process.kill(term, pid)
+      running! and ::Process.kill(term, pid)
     end
 
   end
-
 end
