@@ -27,7 +27,7 @@ module Nutcracker
     def start
       return if running?
       @pid = ::Process.spawn Nutcracker.executable, '-c', config_file
-      Kernel.at_exit { stop if running? }
+      Kernel.at_exit { kill if running? }
       self
     end
 
@@ -36,11 +36,11 @@ module Nutcracker
     end
 
     def stop
-      signal :TERM
+      sig :TERM
     end
 
     def kill
-      signal :KILL
+      sig :KILL
     end
 
     def join
@@ -54,6 +54,11 @@ module Nutcracker
     def config
       @config ||= YAML.load_file config_file
     end
+    
+    # syntactic sugar for initialize plugins
+    def use plugin, *args
+      self.class.const_get("::Nutcracker::#{plugin.to_s.capitalize}").start(self,*args)
+    end
 
     private
 
@@ -61,7 +66,7 @@ module Nutcracker
       running? or raise RuntimeError, "Nutcracker isn't running..." 
     end
 
-    def signal term
+    def sig term
       running! and ::Process.kill(term, pid)
     end
 

@@ -1,11 +1,17 @@
 # Nutcracker
-<a href="https://rubygems.org/gems/graphite-api"><img src=https://fury-badge.herokuapp.com/rb/nutcracker.png></a>
+<a href="https://rubygems.org/gems/nutcracker"><img src=https://fury-badge.herokuapp.com/rb/nutcracker.png></a>
 
-This "library" wraps Twitter's [Nutcracker](https://github.com/twitter/twemproxy) in a gem package and provides ( in the near future I hope ) simple ruby API to the `nutcracker` executable.
-For now this repository only contains a Rakefile for building new `nutcracker` gems, look at the last section for more info.
+This library wraps Twitter's [Nutcracker](https://github.com/twitter/twemproxy) in a gem package and provides a simple ruby API to the `nutcracker` executable.
+
+### DISCLAIMER
+this is still a work in progress...
 
 ## Motivation
 The main motivation here is to take the advantages of working with Bundler's dependencies management and to be able to embed Twitter's [Nutcracker](https://github.com/twitter/twemproxy) as a dependency to any Ruby project, this allow you to create small-configuration-only-apps tied to specific version of Nutcracker as I show in the example bellow.
+
+## Plugins
+- [nutcracker-graphite](https://github.com/kontera-technologies/nutcracker-graphite) - Send cluster stats to Graphite
+- [nutcracker-ui](https://github.com/kontera-technologies/nutcracker-ui) - Web interface for admin operations and graphs
 
 ### Installation 
 Add this line to your application's Gemfile:
