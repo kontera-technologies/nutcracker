@@ -54,10 +54,10 @@ module Nutcracker
     def config
       @config ||= YAML.load_file config_file
     end
-    
+
     # syntactic sugar for initialize plugins
     def use plugin, *args
-      self.class.const_get("::Nutcracker::#{plugin.to_s.capitalize}").start(self,*args)
+      Nutcracker.const_get(plugin.to_s.capitalize).start(self,*args)
     end
 
     private

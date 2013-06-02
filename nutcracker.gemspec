@@ -5,7 +5,7 @@ require 'rubygems/package_task'
 
 Gem::Specification.new do |s|
   s.name                  = "nutcracker"
-  s.version               = Nutcracker.version.dup
+  s.version               = Nutcracker.version
   s.platform              = Gem::Platform::RUBY
   s.summary               = "Twitter's Nutcraker Gem Wrapper"
   s.description           = "Gem/Bundler benefits for Twitter's Nutcraker C app"
