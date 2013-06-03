@@ -18,7 +18,7 @@ task :download do
     File.open("ext/nutcracker/extconf.rb",'w') do |file|
       file.puts %q{
         raise "no support for #{RUBY_PLATFORM}" if RUBY_PLATFORM =~ /darwin|mswin|mingw/
-        system './configure'
+        system "./configure --prefix=#{File.expand_path('..',__FILE__)}"
         system 'make'
       }
     end
