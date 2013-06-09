@@ -58,24 +58,75 @@ module Nutcracker
       Nutcracker.const_get(plugin.to_s.capitalize).start(self,*args)
     end
 
+    # Different structure to stats and with more infomation from Redis.info
+    # {
+    #   :clusters => [
+    #     {
+    #       :nodes => [
+    #         {
+    #           :server_url => "redis://redis.com",
+    #           :server_eof => 9,
+    #           :server_err => 20,
+    #           :info => {
+    #             :connections => 10
+    #             :used_memory => 1232132
+    #             :used_memory_rss => 2323132
+    #             :fragmentation => 1.9
+    #             :expired_keys => 2132
+    #             :evicted_keys => 23223
+    #             :hits => 2321
+    #             :misses => 234232
+    #             :keys => 2121
+    #             :max_memory => 123233232
+    #             :hit_ratio => 0.9
+    #           },
+    #           ...
+    #         }
+    #       ]
+    #       :client_eof => 2,
+    #       :client_connections => 3,
+    #       ...
+    #     }
+    #   ],
+    #   :server_attribute1 => "server_value1",
+    #   :server_attribute2 => "server_value2",
+    # }
     def overview
-      { :clusters => {} }.tap do |data|
-        (stats).each do |key, value|
-          (data[key] = value and next) if !value.is_a? Hash
-          next unless ( config[key]["redis"] rescue false ) # skip memcached
+      data = { :clusters => [] }
 
-          data[:clusters][key] = value
-          data[:clusters][key][:nodes] = {}
-          data[:clusters][key].each do |node,node_value|
-            url = "redis://#{node}" unless node =~ /redis\:\/\//
-            if node_value.kind_of? Hash and node.is_a? String
-              data[:clusters][key][:nodes][url] = data[:clusters][key].delete(node)
-              data[:clusters][key][:nodes][url][:info] = redis_info(url)
-            end
-          end
+      stats.each do |cluster_name, cluster_data|
+
+        # Setting global server attributes ( like hostname, version etc...)
+        unless cluster_data.is_a? Hash
+          data[cluster_name] = cluster_data
+          next
         end
+
+        # Adding cluster
+        next unless redis? cluster_name # only support redis clusters
+        cluster = { nodes: [], name: cluster_name }
+        cluster_data.each do |node, node_value|
+          
+          # Adding cluster Node
+          if node_value.kind_of? Hash
+            url = ( node =~ /redis\:\/\// ) ? node : "redis://#{node}"
+            cluster[:nodes] << {
+              server_url: url, info: redis_info(url)
+            }.merge(cluster_data[node])
+          else # Cluster attribute
+            cluster[node] = node_value
+          end
+
+        end
+        data[:clusters].push cluster
       end
+      data
     end
+
+    def redis? cluster
+      config[cluster]["redis"] rescue false
+    end
+
 
     def redis_info url
       redis = Redis.connect url: url
