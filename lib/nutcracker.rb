@@ -48,7 +48,6 @@ module Nutcracker
       running! and ::Process.waitpid2 pid
     end
 
-
     def config
       @config ||= YAML.load_file config_file
     end
@@ -92,7 +91,7 @@ module Nutcracker
     #   :server_attribute2 => "server_value2",
     # }
     def overview
-      data = { :clusters => [] }
+      data = { :clusters => [], :config => config }
 
       stats.each do |cluster_name, cluster_data|
 
@@ -126,7 +125,6 @@ module Nutcracker
     def redis? cluster
       config[cluster]["redis"] rescue false
     end
-
 
     def redis_info url
       redis = Redis.connect url: url
