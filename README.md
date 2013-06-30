@@ -11,7 +11,7 @@ The main motivation here is to take the advantages of working with Bundler's dep
 
 ## Plugins
 - [nutcracker-graphite](https://github.com/kontera-technologies/nutcracker-graphite) - Send cluster stats to Graphite
-- [nutcracker-ui](https://github.com/kontera-technologies/nutcracker-ui) - Web interface for admin operations and graphs
+- [nutcracker-web](https://github.com/kontera-technologies/nutcracker-web) - Web interface
 
 ### Installation 
 Add this line to your application's Gemfile:
