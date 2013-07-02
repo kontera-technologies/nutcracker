@@ -130,14 +130,14 @@ module Nutcracker
     def redis_info url
       begin
         redis = Redis.connect(url: url) 
-      rescue
-        return Hash.new
+        info = redis.info
+        db_size = redis.dbsize
+        max_memory = redis.config(:get, 'maxmemory')['maxmemory'].to_i
+        redis.quit
+      rescue Exception
+        return {}
       end
-       
-      info = redis.info
-      db_size     = redis.dbsize
-      max_memory  = redis.config(:get, 'maxmemory')['maxmemory'].to_i
-      redis.quit
+      
       {
         'connections'     => info['connected_clients'].to_i,
         'used_memory'     => info['used_memory'].to_f,
