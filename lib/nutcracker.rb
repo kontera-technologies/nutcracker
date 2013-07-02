@@ -109,8 +109,9 @@ module Nutcracker
           # Adding cluster Node
           if node_value.kind_of? Hash
             url = ( node =~ /redis\:\/\// ) ? node : "redis://#{node}"
+            info = redis_info(url)
             cluster[:nodes] << {
-              server_url: url, info: redis_info(url)
+              server_url: url, info: info, running: info.any?
             }.merge(cluster_data[node])
           else # Cluster attribute
             cluster[node] = node_value
@@ -127,7 +128,12 @@ module Nutcracker
     end
 
     def redis_info url
-      redis = Redis.connect url: url
+      begin
+        redis = Redis.connect(url: url) 
+      rescue
+        return Hash.new
+      end
+       
       info = redis.info
       db_size     = redis.dbsize
       max_memory  = redis.config(:get, 'maxmemory')['maxmemory'].to_i
