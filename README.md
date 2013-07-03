@@ -4,7 +4,7 @@
 This library wraps Twitter's [Nutcracker](https://github.com/twitter/twemproxy) in a gem package and provides a simple ruby API to the `nutcracker` executable.
 
 ### Disclaimer
-this project is still in its early stages, so things could be a little buggy, if you find one, feel free to [report](https://github.com/kontera-technologies/nutcracker/issues) it.
+this project is still in its early stages so things could be a little bit buggy, if you find one feel free to [report](https://github.com/kontera-technologies/nutcracker/issues) it.
 
 ## Motivation
 The main motivation here is to take the advantages of working with Bundler's dependencies management and to be able to embed Twitter's [Nutcracker](https://github.com/twitter/twemproxy) as a dependency to any Ruby project, this allow you to create small-configuration-only-apps tied to specific version of Nutcracker as I show in the example bellow.
