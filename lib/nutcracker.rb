@@ -154,7 +154,7 @@ module Nutcracker
     end
 
     def stats
-      JSON.parse TCPSocket.new('localhost',22222).read rescue {}
+      JSON.parse TCPSocket.new('127.0.0.1',22222).read rescue {}
     end
 
     private
