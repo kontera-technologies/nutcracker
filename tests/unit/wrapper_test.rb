@@ -7,12 +7,13 @@ module Nutcracker
 
     def setup
       @out = Tempfile.new('nutcracker')
+      p "fu1"
       @nutcracker = redirect_output(out) {
         Nutcracker.start config_file: fixture('config.yaml')
       }
-      p "fu"
-      p @nutcracker
       p "fu2"
+      p @nutcracker
+      p "fu3"
       assert @nutcracker.running?
     end
     
