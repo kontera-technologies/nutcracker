@@ -1,5 +1,7 @@
 #!/bin/bash
-echo `pwd`
+
+mkdir ext
+bundle exec rake build
 cd ext/nutcracker
 make
 cd -
