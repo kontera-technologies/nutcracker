@@ -53,6 +53,10 @@ module Nutcracker
     
     # Returns the current running status
     def running?
+      puts "attached? #{attached?.inspect}"
+      puts "stats.any? #{stats.inspect}"
+      puts "pid #{pid.inspect}"
+      puts "::Process.getpgid(#{pid}) #{(::Process.getpgid pid rescue :fu).inspect}"
       attached? ? stats.any? : !!(pid and ::Process.getpgid pid rescue false)
     end
     
