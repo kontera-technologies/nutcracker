@@ -8,8 +8,9 @@ module Nutcracker
     def setup
       @out = Tempfile.new('nutcracker')
       @nutcracker = redirect_output(out) {
-        Nutcracker.start config_file: fixture('config.yaml')
+        Nutcracker.start(config_file: fixture('config.yaml'))
       }
+      sleep 1
       assert @nutcracker.running?
     end
     
@@ -20,15 +21,16 @@ module Nutcracker
       out.close
     end
 
-    def test_running?
-      assert nutcracker.running?
-      Process.kill(:KILL,nutcracker.pid)
+    def test_kill
+      nutcracker.kill
       sleep 0.1
       refute nutcracker.running?
     end
+    
 
-    def test_kill
-      nutcracker.kill
+    def test_running?
+      assert nutcracker.running?
+      Process.kill(:KILL,nutcracker.pid)
       sleep 0.1
       refute nutcracker.running?
     end
@@ -61,13 +63,13 @@ module Nutcracker
     def test_sample_flow
       assert nutcracker.running?
       nutcracker.stop
-      sleep 0.1
+      sleep 1
       refute nutcracker.running?
       redirect_output(out) { nutcracker.start }
-      sleep 0.1
+      sleep 1
       assert nutcracker.running?
       nutcracker.kill
-      sleep 0.1
+      sleep 1
       refute nutcracker.running?
     end
     
