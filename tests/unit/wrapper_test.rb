@@ -10,6 +10,9 @@ module Nutcracker
       @nutcracker = redirect_output(out) {
         Nutcracker.start config_file: fixture('config.yaml')
       }
+      p "fu"
+      p @nutcracker
+      p "fu2"
       assert @nutcracker.running?
     end
     
