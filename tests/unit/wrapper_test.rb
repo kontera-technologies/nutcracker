@@ -70,6 +70,13 @@ module Nutcracker
       sleep 0.1
       refute nutcracker.running?
     end
+    
+    def test_node_aliases
+      nutcracker.expects(:config).returns({ "a" => {"servers" => ["redis1:1234","redis2:1234"] }})
+      assert_equal(nutcracker.send(:node_aliases,"a"), {"redis1:1234"=>nil, "redis2:1234"=>nil})
+      nutcracker.expects(:config).returns({ "a" => {"servers" => ["redis1:1234:1 shuki","redis2:1234:2"] }})
+      assert_equal(nutcracker.send(:node_aliases,"a"), {"shuki"=>"redis1:1234", "redis2:1234"=>nil})
+    end
 
   end
 end
