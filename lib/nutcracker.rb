@@ -5,128 +5,133 @@ require 'yaml'
 require 'redis'
 
 module Nutcracker
-
+  # Syntactic sugar for launching the Nutcracker service ( see {Wrapper#initialize} )
+  # @return [Wrapper] Nutcracker process wrapper
+  # @example
+  #  Nutcracker.start config_file: 'conf/nutcracker.yaml'
   def self.start options
     Nutcracker::Wrapper.new(options).start
   end
-
+  
+  # Connect to a running instance of Nutcracker ( see {Wrapper#initialize} )
+  # @return [Wrapper] Nutcracker process wrapper
+  # @example
+  #  Nutcracker.attach :config_file: 'conf/nutcracker.yaml', :stats_port => 22222
+  def self.attach options
+    Nutcracker::Wrapper.new options.merge attached: true
+  end
+  
+  # Returns the Nutcracker executable path that is embeded with the gem
   def self.executable
     File.expand_path("../../ext/nutcracker/src/nutcracker", __FILE__)
   end
 
+  # Returns the version string
   def self.version
     Nutcracker::VERSION
   end
 
   class Wrapper
-    attr_reader :pid, :config_file
+    attr_reader :pid
 
+    # Initialize a new Nutcracker process wrappper
+    # @param [Hash] options
+    # @option options [String] :config_file (conf/nutcracker.yaml) path to nutcracker's configuration file
+    # @option options [String] :stats_port (22222) Nutcracker stats listing port
+    # @option options [Array] :args ([]) array with additional command line arguments
     def initialize options
-      @config_file = options.fetch :config_file
+      @options = validate defaults.merge options
     end
-
-    def start
-      return if running?
-      @pid = ::Process.spawn Nutcracker.executable, '-c', config_file
+    
+    # launching the Nutcracker service
+    def start *args
+      return if attached? or running?
+      @pid = ::Process.spawn Nutcracker.executable, *command
       Kernel.at_exit { kill if running? }
       self
     end
-
+    
+    # Returns the current running status
     def running?
-      !!(pid and ::Process.getpgid pid rescue false)
+      attached? ? stats.any? : !!(pid and ::Process.getpgid pid rescue false)
     end
-
+    
+    # Returns true if the current instance was initialize with the attached flag
+    def attached?
+      @options[:attached]
+    end
+    
+    # Stops the Nutcracker service
     def stop
       sig :TERM
     end
-
+    
+    # Kills the Nutcracker service
     def kill
       sig :KILL
     end
-
+    
+    # Wait for the process to exit
     def join
-      running! and ::Process.waitpid2 pid
+      attached? ? sleep : (running! and ::Process.waitpid2 pid)
     end
 
+    # Returns Nutcracker's configuration hash
     def config
-      @config ||= YAML.load_file config_file
+      @config ||= YAML.load_file @options[:config_file]
     end
 
-    # syntactic sugar for initialize plugins
+    # Syntactic sugar for initialize plugins
     def use plugin, *args
       Nutcracker.const_get(plugin.to_s.capitalize).start(self,*args)
     end
-
-    # Different structure to stats and with more infomation from Redis.info
-    # {
-    #   :clusters => [
-    #     {
-    #       :nodes => [
-    #         {
-    #           :server_url => "redis://redis.com",
-    #           :server_eof => 9,
-    #           :server_err => 20,
-    #           :info => {
-    #             :connections => 10
-    #             :used_memory => 1232132
-    #             :used_memory_rss => 2323132
-    #             :fragmentation => 1.9
-    #             :expired_keys => 2132
-    #             :evicted_keys => 23223
-    #             :hits => 2321
-    #             :misses => 234232
-    #             :keys => 2121
-    #             :max_memory => 123233232
-    #             :hit_ratio => 0.9
-    #           },
-    #           ...
-    #         }
-    #       ]
-    #       :client_eof => 2,
-    #       :client_connections => 3,
-    #       ...
-    #     }
-    #   ],
-    #   :server_attribute1 => "server_value1",
-    #   :server_attribute2 => "server_value2",
-    # }
+    
+    # Returns hash with server and node statistics 
+    # See example.json @ project root to get details about the structure
     def overview
       data = { :clusters => [], :config => config }
 
       stats.each do |cluster_name, cluster_data|
-
         # Setting global server attributes ( like hostname, version etc...)
         unless cluster_data.is_a? Hash
           data[cluster_name] = cluster_data
           next
         end
-
-        # Adding cluster
-        next unless redis? cluster_name # only support redis clusters
+      
+        next unless redis? cluster_name # skip memcached clusters
+        
+        aliases = node_aliases cluster_name
         cluster = { nodes: [], name: cluster_name }
         cluster_data.each do |node, node_value|
-          
-          # Adding cluster Node
+          # Adding node
           if node_value.kind_of? Hash
+            node_data = cluster_data[node]
+            node = aliases[node] || node
             url = ( node =~ /redis\:\/\// ) ? node : "redis://#{node}"
             info = redis_info(url)
             cluster[:nodes] << {
               server_url: url, info: info, running: info.any?
-            }.merge(cluster_data[node])
+            }.merge(node_data)
           else # Cluster attribute
             cluster[node] = node_value
           end
-
         end
         data[:clusters].push cluster
       end
       data
     end
-
+    
+    # Check if a given cluster name was configure as Redis
     def redis? cluster
       config[cluster]["redis"] rescue false
     end
-
+    
+    # https://github.com/twitter/twemproxy/blob/master/notes/recommendation.md#node-names-for-consistent-hashing
+    def node_aliases cluster
+      Hash[config[cluster]["servers"].map(&:split).each {|o| o[0]=o[0].split(":")[0..1].join(":")}.map(&:reverse)]
+    end
+    
+    # Returns hash with information about a given Redis
     def redis_info url
       begin
         redis = Redis.connect(url: url) 
@@ -153,11 +158,27 @@ module Nutcracker
       }.tap {|d| d['hit_ratio'] = d['hits'].to_f / (d['hits']+d['misses']).to_f if d['hits'] > 0 }
     end
 
+    # Returns a hash with server statistics
     def stats
-      JSON.parse TCPSocket.new('127.0.0.1',22222).read rescue {}
+      JSON.parse TCPSocket.new('127.0.0.1',@options[:stats_port]).read rescue {}
     end
 
     private
+    
+    def command
+      ['-c', @options[:config_file],'-s',@options[:stats_port],*@options[:args]].map(&:to_s)
+    end
+    
+    def defaults
+      { :args => [],
+        :config_file => 'conf/nutcracker.yaml',
+        :stats_port => 22222,
+        :attached => false}
+    end
+    
+    def validate options
+      options.tap { File.exists? options[:config_file] or raise "#{options[:config_file]} not found" }
+    end
 
     def running!
       running? or raise RuntimeError, "Nutcracker isn't running..." 
