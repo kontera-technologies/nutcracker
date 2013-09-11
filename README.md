@@ -68,6 +68,12 @@ nutcracker.start
 nutcracker.join # wait for server to exit
 ```
 
+you can also attach to a running instance of nutcracker
+
+```ruby
+Nutcracker.attach(config_file: 'cluster.yaml', stats_port: 22222)
+```
+
 ### Building new gems
 * Set the version @ `lib/nutcracker/version.rb` ( [Available Versions](https://code.google.com/p/twemproxy/downloads/list) )
 * run the `rake build` command
