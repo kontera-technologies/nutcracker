@@ -62,6 +62,7 @@ module Nutcracker
       puts "running? #{attached? ? stats.any? : !!(pid and ::Process.getpgid pid rescue false)}"
       puts "Z"*50
       attached? ? stats.any? : !!(pid and ::Process.getpgid pid rescue false)
+      stats.any?
     end
     
     # Returns true if the current instance was initialize with the attached flag
