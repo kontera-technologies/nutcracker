@@ -45,7 +45,7 @@ module Nutcracker
     
     # launching the Nutcracker service
     def start *args
-      return if attached? or running?
+      return self if attached? or running?
       @pid = ::Process.spawn Nutcracker.executable, *command
       Kernel.at_exit { kill if running? }
       self
@@ -53,15 +53,6 @@ module Nutcracker
     
     # Returns the current running status
     def running?
-      puts "Z"*50
-      puts caller
-      puts "attached? #{attached?.inspect}"
-      puts "stats.any? #{stats.inspect}"
-      puts "pid #{pid.inspect}"
-      puts "::Process.getpgid(#{pid}) #{(::Process.getpgid pid rescue :fu).inspect}"
-      puts "running? #{attached? ? stats.any? : !!(pid and ::Process.getpgid pid rescue false)}"
-      puts "Z"*50
-      attached? ? stats.any? : !!(pid and ::Process.getpgid pid rescue false)
       stats.any?
     end
     

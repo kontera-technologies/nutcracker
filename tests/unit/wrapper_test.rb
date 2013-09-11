@@ -7,13 +7,10 @@ module Nutcracker
 
     def setup
       @out = Tempfile.new('nutcracker')
-      p "fu1"
       @nutcracker = redirect_output(out) {
-        Nutcracker.start config_file: fixture('config.yaml')
+        Nutcracker.start(config_file: fixture('config.yaml'))
       }
-      p "fu2"
-      p @nutcracker
-      p "fu3"
+      sleep 1
       assert @nutcracker.running?
     end
     
@@ -24,6 +21,13 @@ module Nutcracker
       out.close
     end
 
+    def test_kill
+      nutcracker.kill
+      sleep 0.1
+      refute nutcracker.running?
+    end
+    
+
     def test_running?
       assert nutcracker.running?
       Process.kill(:KILL,nutcracker.pid)
@@ -31,12 +35,6 @@ module Nutcracker
       refute nutcracker.running?
     end
 
-    def test_kill
-      nutcracker.kill
-      sleep 0.1
-      refute nutcracker.running?
-    end
-=begin
     def test_stop
       nutcracker.stop
       sleep 0.1
@@ -81,6 +79,6 @@ module Nutcracker
       nutcracker.expects(:config).returns({ "a" => {"servers" => ["redis1:1234:1 shuki","redis2:1234:2"] }})
       assert_equal(nutcracker.send(:node_aliases,"a"), {"shuki"=>"redis1:1234", "redis2:1234"=>nil})
     end
-=end
+
   end
 end
