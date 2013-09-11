@@ -1,4 +1,4 @@
 language: ruby
-before_script: compile_ext.bash
+before_script: cd ext/nutcracker;make;cd -
 rvm:
   - "2.0.0"
