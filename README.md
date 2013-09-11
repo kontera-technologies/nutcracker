@@ -1,5 +1,6 @@
 # Nutcracker
 <a href="https://rubygems.org/gems/nutcracker"><img src=https://fury-badge.herokuapp.com/rb/nutcracker.png></a>
+<a href="https://travis-ci.org/kontera-technologies/nutcracker"><img src="https://api.travis-ci.org/kontera-technologies/nutcracker.png?branch=master"></a>
 
 This library wraps Twitter's [Nutcracker](https://github.com/twitter/twemproxy) in a gem package and provides a simple ruby API to the `nutcracker` executable.
 
