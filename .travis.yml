@@ -1,3 +1,4 @@
 language: ruby
+before_script: compile_ext.bash
 rvm:
   - "2.0.0"
