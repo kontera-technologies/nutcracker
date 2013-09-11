@@ -63,13 +63,13 @@ module Nutcracker
     def test_sample_flow
       assert nutcracker.running?
       nutcracker.stop
-      sleep 0.1
+      sleep 1
       refute nutcracker.running?
       redirect_output(out) { nutcracker.start }
-      sleep 0.1
+      sleep 1
       assert nutcracker.running?
       nutcracker.kill
-      sleep 0.1
+      sleep 1
       refute nutcracker.running?
     end
     
