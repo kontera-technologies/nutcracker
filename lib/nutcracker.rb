@@ -3,6 +3,7 @@ require 'socket'
 require 'json'
 require 'yaml'
 require 'redis'
+require 'timeout'
 
 module Nutcracker
   # Syntactic sugar for launching the Nutcracker service ( see {Wrapper#initialize} )
@@ -47,6 +48,7 @@ module Nutcracker
     def start *args
       return self if attached? or running?
       @pid = ::Process.spawn Nutcracker.executable, *command
+      timeout(60) { sleep 1 until running? }
       Kernel.at_exit { kill if running? }
       self
     end

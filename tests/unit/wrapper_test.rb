@@ -10,7 +10,6 @@ module Nutcracker
       @nutcracker = redirect_output(out) {
         Nutcracker.start(config_file: fixture('config.yaml'))
       }
-      sleep 1
       assert @nutcracker.running?
     end
     
@@ -66,7 +65,6 @@ module Nutcracker
       sleep 1
       refute nutcracker.running?
       redirect_output(out) { nutcracker.start }
-      sleep 1
       assert nutcracker.running?
       nutcracker.kill
       sleep 1
