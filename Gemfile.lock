@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    nutcracker (0.2.4.9)
+    nutcracker (0.2.4.10)
       redis
 
 GEM
