@@ -13,7 +13,7 @@ module Nutcracker
   def self.start options
     Nutcracker::Wrapper.new(options).start
   end
-  
+
   # Connect to a running instance of Nutcracker ( see {Wrapper#initialize} )
   # @return [Wrapper] Nutcracker process wrapper
   # @example
@@ -21,7 +21,7 @@ module Nutcracker
   def self.attach options
     Nutcracker::Wrapper.new options.merge attached: true
   end
-  
+
   # Returns the Nutcracker executable path that is embeded with the gem
   def self.executable
     File.expand_path("../../ext/nutcracker/src/nutcracker", __FILE__)
@@ -43,36 +43,36 @@ module Nutcracker
     def initialize options
       @options = validate defaults.merge options
     end
-    
+
     # launching the Nutcracker service
     def start *args
       return self if attached? or running?
       @pid = ::Process.spawn Nutcracker.executable, *command
-      timeout(60) { sleep 1 until running? }
+      timeout(5) { sleep 0.1 until running? }
       Kernel.at_exit { kill if running? }
       self
     end
-    
+
     # Returns the current running status
     def running?
       stats.any?
     end
-    
+
     # Returns true if the current instance was initialize with the attached flag
     def attached?
       @options[:attached]
     end
-    
+
     # Stops the Nutcracker service
     def stop
       sig :TERM
     end
-    
+
     # Kills the Nutcracker service
     def kill
       sig :KILL
     end
-    
+
     # Wait for the process to exit
     def join
       attached? ? sleep : (running! and ::Process.waitpid2 pid)
@@ -87,8 +87,8 @@ module Nutcracker
     def use plugin, *args
       Nutcracker.const_get(plugin.to_s.capitalize).start(self,*args)
     end
-    
-    # Returns hash with server and node statistics 
+
+    # Returns hash with server and node statistics
     # See example.json @ project root to get details about the structure
     def overview
       data = { :clusters => [], :config => config }
@@ -99,9 +99,9 @@ module Nutcracker
           data[cluster_name] = cluster_data
           next
         end
-      
+
         next unless redis? cluster_name # skip memcached clusters
-        
+
         aliases = node_aliases cluster_name
         cluster = { nodes: [], name: cluster_name }
         cluster_data.each do |node, node_value|
@@ -122,21 +122,21 @@ module Nutcracker
       end
       data
     end
-    
+
     # Check if a given cluster name was configure as Redis
     def redis? cluster
       config[cluster]["redis"] rescue false
     end
-    
+
     # https://github.com/twitter/twemproxy/blob/master/notes/recommendation.md#node-names-for-consistent-hashing
     def node_aliases cluster
       Hash[config[cluster]["servers"].map(&:split).each {|o| o[0]=o[0].split(":")[0..1].join(":")}.map(&:reverse)]
     end
-    
+
     # Returns hash with information about a given Redis
     def redis_info url
       begin
-        redis = Redis.connect(url: url) 
+        redis = Redis.connect(url: url)
         info = redis.info
         db_size = redis.dbsize
         max_memory = redis.config(:get, 'maxmemory')['maxmemory'].to_i
@@ -144,7 +144,7 @@ module Nutcracker
       rescue Exception
         return {}
       end
-      
+
       {
         'connections'     => info['connected_clients'].to_i,
         'used_memory'     => info['used_memory'].to_f,
@@ -166,24 +166,24 @@ module Nutcracker
     end
 
     private
-    
+
     def command
       ['-c', @options[:config_file],'-s',@options[:stats_port],*@options[:args]].map(&:to_s)
     end
-    
+
     def defaults
       { :args => [],
         :config_file => 'conf/nutcracker.yaml',
         :stats_port => 22222,
         :attached => false}
     end
-    
+
     def validate options
       options.tap { File.exists? options[:config_file] or raise "#{options[:config_file]} not found" }
     end
 
     def running!
-      running? or raise RuntimeError, "Nutcracker isn't running..." 
+      running? or raise RuntimeError, "Nutcracker isn't running..."
     end
 
     def sig term
