@@ -48,14 +48,15 @@ module Nutcracker
     def start *args
       return self if attached? or running?
       @pid = ::Process.spawn Nutcracker.executable, *command
-      timeout(5) { sleep 0.1 until running? }
+      sleep 1
+      abort "Nutcracker failed to start" unless running?
       Kernel.at_exit { kill if running? }
       self
     end
 
     # Returns the current running status
     def running?
-      stats.any?
+     attached? ? stats.any? : !!(pid and ::Process.getpgid pid rescue nil)
     end
 
     # Returns true if the current instance was initialize with the attached flag
