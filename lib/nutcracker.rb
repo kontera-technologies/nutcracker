@@ -58,15 +58,15 @@ module Nutcracker
 
     # Returns the current running status
     def running?
-      sleep 2
-      if (attached? ? stats.any? : !!(pid and ::Process.getpgid pid rescue nil)) != stats.any?
-        puts "#{attached?} ? #{stats.any?} : !!(#{pid} and #{::Process.getpgid pid rescue nil})"
-        p self
-        p stats
+     # sleep 2
+     # if (attached? ? stats.any? : !!(pid and ::Process.getpgid pid rescue nil)) != stats.any?
+     #   puts "#{attached?} ? #{stats.any?} : !!(#{pid} and #{::Process.getpgid pid rescue nil})"
+     #   p self
+     #   p stats
         attached? ? stats.any? : !!(pid and ::Process.getpgid pid rescue nil)
-        puts caller
-      end
-      stats.any?
+     #   puts caller
+     # end
+     # stats.any?
     end
 
     # Returns true if the current instance was initialize with the attached flag
