@@ -48,7 +48,8 @@ module Nutcracker
     def start *args
       return self if attached? or running?
       @pid = ::Process.spawn Nutcracker.executable, *command
-      sleep 1
+      puts "IN HERE"
+      sleep 10
       abort "Nutcracker failed to start" unless running?
       Kernel.at_exit { kill if running? }
       self
