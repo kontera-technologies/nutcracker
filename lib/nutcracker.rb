@@ -77,7 +77,7 @@ module Nutcracker
 
     # Wait for the process to exit
     def join
-      attached? ? sleep : (running! and ::Process.waitpid2 pid)
+      attached? ? sleep : (running! and ::Process.waitpid2 pid rescue nil)
     end
 
     # Returns Nutcracker's configuration hash
