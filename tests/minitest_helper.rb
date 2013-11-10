@@ -19,13 +19,13 @@ module Nutcracker
       end
 
       def redirect_output file, &block
-        file.sync = true
-        err, out =  STDERR.clone , STDOUT.clone
-        STDERR.reopen(file)
-        STDOUT.reopen(file)
+        #file.sync = true
+        #err, out =  STDERR.clone , STDOUT.clone
+        #STDERR.reopen(file)
+        #STDOUT.reopen(file)
         payload = block.call
-        STDERR.reopen(err)
-        STDOUT.reopen(out)
+        #STDERR.reopen(err)
+        #STDOUT.reopen(out)
         payload
       end
 
