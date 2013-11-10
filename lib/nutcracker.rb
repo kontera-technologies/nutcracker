@@ -57,7 +57,7 @@ module Nutcracker
 
     # Returns the current running status
     def running?
-      sleep 5
+      sleep 10
       if (attached? ? stats.any? : !!(pid and ::Process.getpgid pid rescue nil)) != stats.any?
         puts "#{attached?} ? #{stats.any?} : !!(#{pid} and #{::Process.getpgid pid rescue nil})"
         p self
