@@ -49,9 +49,8 @@ module Nutcracker
       return self if attached? or running?
       @pid = ::Process.spawn Nutcracker.executable, *command
       puts "IN HERE"
-      sleep 10
+      sleep 1
       abort "Nutcracker failed to start" unless running?
-      #timeout(5) { sleep 0.1 until running? }
       Kernel.at_exit { kill if running? }
       self
     end
