@@ -6,5 +6,5 @@ rvm:
 services:
   - redis-server
 branches:
-  - master
-  - fixing-travis
+  only:
+    - fixing-travis
