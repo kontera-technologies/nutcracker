@@ -8,6 +8,7 @@ Nutcracker::GemSpec = eval File.read 'nutcracker.gemspec'
 
 sversion = Nutcracker.version.split(".")[0..2].join(".") 
 
+desc "Download Nutcracker c app"
 task :download do
   "nutcracker-#{sversion}.tar.gz".tap do |tarball|
     sh "mkdir ext" unless File.directory? "ext"
@@ -17,7 +18,6 @@ task :download do
     sh "mv nutcracker-#{sversion} ext/nutcracker"
     File.open("ext/nutcracker/extconf.rb",'w') do |file|
       file.puts %q{
-        raise "no support for #{RUBY_PLATFORM}" if RUBY_PLATFORM =~ /darwin|mswin|mingw/
         system "./configure --prefix=#{File.expand_path('..',__FILE__)}"
         system 'make'
       }
@@ -26,6 +26,7 @@ task :download do
   end
 end
 
+desc "Download the Nutcracker C app and build new Gem"
 task :build => :download do
   sh "rake gem"
 end
