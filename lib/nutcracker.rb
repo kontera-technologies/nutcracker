@@ -50,7 +50,7 @@ module Nutcracker
       @pid = ::Process.spawn Nutcracker.executable, *command
       Process.detach(@pid)
       sleep 2
-      abort "Nutcracker failed to start" unless running?
+      raise "Nutcracker failed to start" unless running?
       Kernel.at_exit { kill if running? }
       self
     end
