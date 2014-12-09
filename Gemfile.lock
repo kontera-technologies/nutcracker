@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    nutcracker (0.3.0.12)
+    nutcracker (0.4.0.12)
       redis
 
 GEM
@@ -12,7 +12,7 @@ GEM
     mocha (0.14.0)
       metaclass (~> 0.0.1)
     rake (10.1.0)
-    redis (3.0.6)
+    redis (3.1.0)
 
 PLATFORMS
   ruby

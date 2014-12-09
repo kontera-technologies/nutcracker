@@ -23,10 +23,10 @@ module Nutcracker
         err, out =  STDERR.clone , STDOUT.clone
         STDERR.reopen(file)
         STDOUT.reopen(file)
-        payload = block.call
+        block.call
+      ensure
         STDERR.reopen(err)
         STDOUT.reopen(out)
-        payload
       end
 
     end
