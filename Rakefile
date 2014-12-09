@@ -10,12 +10,13 @@ sversion = Nutcracker.version.split(".")[0..2].join(".")
 
 desc "Download Nutcracker c app"
 task :download do
-  "nutcracker-#{sversion}.tar.gz".tap do |tarball|
+  "twemproxy-#{sversion}.tar.gz".tap do |tarball|
     sh "mkdir ext" unless File.directory? "ext"
     sh "rm -rf ext/nutcracker"
-    sh "wget https://twemproxy.googlecode.com/files/#{tarball}"
+    sh "wget https://github.com/twitter/twemproxy/archive/v#{sversion}.tar.gz -O #{tarball}"
     sh "tar -zxvf #{tarball}"
-    sh "mv nutcracker-#{sversion} ext/nutcracker"
+    sh "mv twemproxy-#{sversion} ext/nutcracker"
+    Dir.chdir("ext/nutcracker") { sh "autoreconf -fvi"}
     File.open("ext/nutcracker/extconf.rb",'w') do |file|
       file.puts %q{
         system "./configure --prefix=#{File.expand_path('..',__FILE__)}"
@@ -27,13 +28,9 @@ task :download do
 end
 
 desc "Download the Nutcracker C app and build new Gem"
-task :build => :download do
-  sh "rake gem"
-end
+task :gem => [:clobber_package,:download]
 
-task :gem => [:clobber_package]
-
-Gem::PackageTask.new Nutcracker::GemSpec do |p|
+Gem::PackageTask.new(Nutcracker::GemSpec) do |p|
   p.gem_spec = Nutcracker::GemSpec
 end
 
@@ -44,6 +41,10 @@ end
 
 ## Tests stuff
 task :default => :test
+
+task :test do
+  sh "./compile_ext.bash" unless File.exists? "ext/nutcracker/src/nutcracker"
+end
 
 Rake::TestTask.new(:test) do |t|
   t.libs << "tests"
