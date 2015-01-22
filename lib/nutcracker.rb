@@ -39,6 +39,7 @@ module Nutcracker
     # @param [Hash] options
     # @option options [String] :config_file (conf/nutcracker.yaml) path to nutcracker's configuration file
     # @option options [String] :stats_port (22222) Nutcracker stats listing port
+    # @option options [String] :max_memory use fixed max memory size ( ignore server configuration )
     # @option options [Array] :args ([]) array with additional command line arguments
     def initialize options
       @options = validate defaults.merge options
@@ -141,7 +142,7 @@ module Nutcracker
         redis = Redis.connect(url: url)
         info = redis.info
         db_size = redis.dbsize
-        max_memory = redis.config(:get, 'maxmemory')['maxmemory'].to_i
+        max_memory = (options[:max_memory] || redis.config(:get, 'maxmemory')['maxmemory']).to_i
         redis.quit
       rescue Exception
         return {}
