@@ -142,7 +142,7 @@ module Nutcracker
         redis = Redis.connect(url: url)
         info = redis.info
         db_size = redis.dbsize
-        max_memory = (options[:max_memory] || redis.config(:get, 'maxmemory')['maxmemory']).to_i
+        max_memory = (@options[:max_memory] || redis.config(:get, 'maxmemory')['maxmemory']).to_i
         redis.quit
       rescue Exception
         return {}
