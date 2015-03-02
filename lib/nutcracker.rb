@@ -103,7 +103,7 @@ module Nutcracker
           next
         end
 
-        next unless redis? cluster_name # skip memcached clusters
+        #next unless redis? cluster_name # skip memcached clusters
 
         aliases = node_aliases cluster_name
         cluster = { nodes: [], name: cluster_name }
