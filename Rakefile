@@ -10,12 +10,12 @@ sversion = Nutcracker.version.split(".")[0..2].join(".")
 
 desc "Download Nutcracker c app"
 task :download do
-  "twemproxy-#{sversion}.tar.gz".tap do |tarball|
+  "nutcracker-#{sversion}.tar.gz".tap do |tarball|
     sh "mkdir ext" unless File.directory? "ext"
     sh "rm -rf ext/nutcracker"
-    sh "wget https://github.com/twitter/twemproxy/archive/v#{sversion}.tar.gz -O #{tarball}"
+    #sh "wget https://github.com/twitter/twemproxy/archive/v#{sversion}.tar.gz -O #{tarball}"
     sh "tar -zxvf #{tarball}"
-    sh "mv twemproxy-#{sversion} ext/nutcracker"
+    sh "mv nutcracker-#{sversion} ext/nutcracker"
     Dir.chdir("ext/nutcracker") do 
       sh "autoreconf -fvi"
       c = File.read("configure").gsub("-${am__api_version}","")
