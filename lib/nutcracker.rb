@@ -139,14 +139,19 @@ module Nutcracker
     # Returns hash with information about a given Redis
     def redis_info url
       begin
-        redis = Redis.connect(url: url)
-        info = redis.info
-        db_size = redis.dbsize
-        max_memory = (@options[:max_memory] || redis.config(:get, 'maxmemory')['maxmemory']).to_i
-        redis.quit
+        r = Redis.connect url: url
+        info = r.info.merge 'dbsize' => r.dbsize
       rescue Exception
         return {}
       end
+
+      begin
+        info['maxmemory'] = @options.fetch(:max_memory) { r.config(:get, 'maxmemory')['maxmemory'] }
+      rescue Exception
+        info['maxmemory'] = info['used_memory_rss']
+      end
+
+      r.quit
 
       {
         'connections'     => info['connected_clients'].to_i,
@@ -157,8 +162,8 @@ module Nutcracker
         'evicted_keys'    => info['evicted_keys'].to_i,
         'hits'            => info['keyspace_hits'].to_i,
         'misses'          => info['keyspace_misses'].to_i,
-        'keys'            => db_size,
-        'max_memory'      => max_memory,
+        'keys'            => info['dbsize'].to_i,
+        'max_memory'      => info['maxmemory'].to_i,
         'hit_ratio'       => 0
       }.tap {|d| d['hit_ratio'] = d['hits'].to_f / (d['hits']+d['misses']).to_f if d['hits'] > 0 }
     end

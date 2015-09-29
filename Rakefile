@@ -13,7 +13,7 @@ task :download do
   "nutcracker-#{sversion}.tar.gz".tap do |tarball|
     sh "mkdir ext" unless File.directory? "ext"
     sh "rm -rf ext/nutcracker"
-    #sh "wget https://github.com/twitter/twemproxy/archive/v#{sversion}.tar.gz -O #{tarball}"
+    sh "wget 'https://drive.google.com/uc?id=0B6pVMMV5F5dfb1YwcThnaVZXbjg&export=download' -O #{tarball}"
     sh "tar -zxvf #{tarball}"
     sh "mv nutcracker-#{sversion} ext/nutcracker"
     Dir.chdir("ext/nutcracker") do 
@@ -32,10 +32,8 @@ task :download do
 end
 
 desc "Download the Nutcracker C app and build new Gem"
-task :gem => [:clobber_package,:download]
-
-Gem::PackageTask.new(Nutcracker::GemSpec) do |p|
-  p.gem_spec = Nutcracker::GemSpec
+task :gem => [:download] do
+  sh "gem build nutcracker.gemspec"
 end
 
 task :install => [:gem] do

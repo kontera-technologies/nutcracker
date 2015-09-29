@@ -1,3 +1,3 @@
 module Nutcracker
-  VERSION = "0.4.1.18"
+  VERSION = "0.4.1.19"
 end
