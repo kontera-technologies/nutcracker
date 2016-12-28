@@ -4,6 +4,7 @@ require 'json'
 require 'yaml'
 require 'redis'
 require 'timeout'
+require 'uri'
 
 module Nutcracker
   # Syntactic sugar for launching the Nutcracker service ( see {Wrapper#initialize} )
@@ -38,11 +39,12 @@ module Nutcracker
     # Initialize a new Nutcracker process wrappper
     # @param [Hash] options
     # @option options [String] :config_file (conf/nutcracker.yaml) path to nutcracker's configuration file
-    # @option options [String] :stats_port (22222) Nutcracker stats listing port
+    # @option options [String] :stats_uri Nutcracker stats URI - tcp://localhost:22222
     # @option options [String] :max_memory use fixed max memory size ( ignore server configuration )
     # @option options [Array] :args ([]) array with additional command line arguments
     def initialize options
       @options = validate defaults.merge options
+      @options[:stats_uri] = URI @options[:stats_uri]
     end
 
     # launching the Nutcracker service
@@ -170,19 +172,19 @@ module Nutcracker
 
     # Returns a hash with server statistics
     def stats
-      JSON.parse TCPSocket.new('127.0.0.1',@options[:stats_port]).read rescue {}
+      JSON.parse TCPSocket.new(@options[:stats_uri].host,@options[:stats_uri].port).read rescue {}
     end
 
     private
 
     def command
-      ['-c', @options[:config_file],'-s',@options[:stats_port],*@options[:args]].map(&:to_s)
+      ['-c', @options[:config_file],'-s',@options[:stats_uri].port,*@options[:args]].map(&:to_s)
     end
 
     def defaults
       { :args => [],
         :config_file => 'conf/nutcracker.yaml',
-        :stats_port => 22222,
+        :stats_uri => URI("tcp://127.0.0.1:22222"),
         :attached => false}
     end
 
