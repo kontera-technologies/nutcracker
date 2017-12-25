@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    nutcracker (0.4.1.20)
-      redis
+    nutcracker (0.4.1.21)
+      redis (< 4.0.0)
 
 GEM
   remote: http://rubygems.org/
@@ -11,7 +11,7 @@ GEM
     minitest (5.0.2)
     mocha (0.14.0)
       metaclass (~> 0.0.1)
-    redis (3.1.0)
+    redis (3.3.5)
 
 PLATFORMS
   ruby
@@ -22,4 +22,4 @@ DEPENDENCIES
   nutcracker!
 
 BUNDLED WITH
-   1.11.2
+   1.16.1
