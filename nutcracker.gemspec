@@ -21,5 +21,5 @@ Gem::Specification.new do |s|
   s.has_rdoc              = "yard"
   s.add_development_dependency 'minitest', '~> 5.0.0'
   s.add_development_dependency 'mocha', '~> 0.14.0'
-  s.add_runtime_dependency 'redis', '< 4.0.0'
+  s.add_runtime_dependency 'redis'
 end

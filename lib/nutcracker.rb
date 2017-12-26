@@ -141,7 +141,7 @@ module Nutcracker
     # Returns hash with information about a given Redis
     def redis_info url
       begin
-        r = Redis.connect url: url
+        r = Redis.new url: url
         info = r.info.merge 'dbsize' => r.dbsize
       rescue Exception
         return {}
