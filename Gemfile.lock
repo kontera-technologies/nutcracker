@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    nutcracker (0.4.1.21)
-      redis (< 4.0.0)
+    nutcracker (0.4.1.23)
+      redis
 
 GEM
   remote: http://rubygems.org/

@@ -7,8 +7,9 @@ Gem::Specification.new do |s|
   s.name                  = "nutcracker"
   s.version               = Nutcracker::VERSION
   s.platform              = Gem::Platform::RUBY
+  s.license               = "MIT"
   s.summary               = "Gem wrapper for Twitter's Nutcracker"
-  s.description           = "Gem wrapper for Twitter's Nutcracker"
+  s.description           = "Gem wrapper for Twitter's Nutcracker - aka Twemproxy"
   s.author                = "Eran Barak Levi"
   s.email                 = "eran@kontera.com"
   s.homepage              = 'http://www.kontera.com'
