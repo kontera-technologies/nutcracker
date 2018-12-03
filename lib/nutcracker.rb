@@ -143,7 +143,9 @@ module Nutcracker
       begin
         r = Redis.new url: url, password: password
         info = r.info.merge 'dbsize' => r.dbsize
-      rescue Exception
+      rescue Exception => e
+        STDERR.puts "[ERROR][#{__FILE__}:#{__LINE__}] Failed to get data from Redis - " +
+          "#{url.inspect} (using password #{password.inspect}): #{e.message}\n#{e.backtrace.join("\n")}"
         return {}
       end
 
