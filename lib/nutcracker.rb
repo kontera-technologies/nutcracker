@@ -115,7 +115,7 @@ module Nutcracker
             node_data = cluster_data[node]
             node = aliases[node] || node
             url = ( node =~ /redis\:\/\// ) ? node : "redis://#{node}"
-            info = redis_info(url)
+            info = redis_info(url, config[cluster_name]["redis_auth"])
             cluster[:nodes] << {
               server_url: url, info: info, running: info.any?
             }.merge(node_data)
@@ -139,9 +139,9 @@ module Nutcracker
     end
 
     # Returns hash with information about a given Redis
-    def redis_info url
+    def redis_info url, password
       begin
-        r = Redis.new url: url
+        r = Redis.new url: url, password: password
         info = r.info.merge 'dbsize' => r.dbsize
       rescue Exception
         return {}
