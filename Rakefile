@@ -7,15 +7,16 @@ require "rake/testtask"
 Nutcracker::GemSpec = eval File.read 'nutcracker.gemspec'
 
 sversion = Nutcracker.version.split(".")[0..2].join(".") 
+abort "Only support 5+ versions" if Gem::Version.new(sversion) < Gem::Version.new('0.5.0')
 
 desc "Download Nutcracker c app"
 task :download do
   "nutcracker-#{sversion}.tar.gz".tap do |tarball|
     sh "mkdir ext" unless File.directory? "ext"
     sh "rm -rf ext/nutcracker"
-    sh "wget 'https://drive.google.com/uc?id=0B6pVMMV5F5dfb1YwcThnaVZXbjg&export=download' -O #{tarball}"
+    sh "wget 'https://github.com/twitter/twemproxy/releases/download/#{sversion}/twemproxy-#{sversion}.tar.gz' -O #{tarball}"
     sh "tar -zxvf #{tarball}"
-    sh "mv nutcracker-#{sversion} ext/nutcracker"
+    sh "mv twemproxy-#{sversion} ext/nutcracker"
     Dir.chdir("ext/nutcracker") do 
       sh "autoreconf -fvi"
       c = File.read("configure").gsub("-${am__api_version}","")
